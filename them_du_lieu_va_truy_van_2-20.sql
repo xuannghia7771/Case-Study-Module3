@@ -66,7 +66,7 @@ insert into hop_dong_chi_tiet(so_luong,ma_hop_dong,ma_dich_vu_di_kem) value
 (2, 1, 2),
 (2, 12, 2);
 
--- truy vấn dữ liệu SQL cơ bản 2-5
+-- truy vấn dữ liệu SQL cơ bản 2-20
 -- bài 2
 select * from nhan_vien
 where char_length(ho_ten)<=15 and (ho_ten like "K%" or ho_ten like "H%" or ho_ten like "T%");
@@ -76,10 +76,31 @@ select * from khach_hang
 where ((year(curdate()) - year(ngay_sinh)) - (right(curdate(), 5) < right(ngay_sinh, 5)) between 18 and 50) and (dia_chi like "%Đà Nẵng%" or dia_chi like "%Quảng Trị%");
 
 -- bài 4
-select khach_hang.ma_khach_hang, khach_hang.ho_ten, count(hop_dong.ma_khach_hang) as so_lan_dat_phong
-from khach_hang 
-join hop_dong on khach_hang.ma_khach_hang = hop_dong.ma_khach_hang
-join loai_khach on khach_hang.ma_loai_khach = loai_khach.ma_loai_khach
+select KH.ma_khach_hang, KH.ho_ten, count(HD.ma_khach_hang) as so_lan_dat_phong
+from khach_hang KH
+join hop_dong HD on KH.ma_khach_hang = HD.ma_khach_hang
+join loai_khach LK on KH.ma_loai_khach = LK.ma_loai_khach
 where ten_loai_khach = "Diamond"
 group by ma_khach_hang
 order by so_lan_dat_phong;
+
+-- bài 5
+select KH.ma_khach_hang, KH.ho_ten, LK.ten_loai_khach, HD.ma_hop_dong, DV.ten_dich_vu, HD.ngay_lam_hop_dong, HD.ngay_ket_thuc,
+(DV.chi_phi_thue+ifnull((HDCT.so_luong*DVDK.gia),0)) as tong_tien
+from khach_hang KH
+left join loai_khach LK on KH.ma_loai_khach = LK.ma_loai_khach
+left join hop_dong HD on HD.ma_khach_hang = KH.ma_khach_hang
+left join dich_vu DV on DV.ma_dich_vu = HD.ma_dich_vu
+left join hop_dong_chi_tiet HDCT on HDCT.ma_hop_dong = HD.ma_hop_dong
+left join dich_vu_di_kem DVDK on DVDK.ma_dich_vu_di_kem = HDCT.ma_dich_vu_di_kem;
+
+-- bài 6
+select  DV.ma_dich_vu, DV.ten_dich_vu, DV.dien_tich, DV.chi_phi_thue, LDV.ten_loai_dich_vu
+from dich_vu DV
+left join loai_dich_vu LDV on DV.ma_loai_dich_vu = LDV.ma_loai_dich_vu
+left join hop_dong HD on DV.ma_dich_vu = HD.ma_dich_vu
+where DV.ma_dich_vu not in (
+	select HD.ma_dich_vu
+	from hop_dong HD
+	where year(HD.ngay_lam_hop_dong) = 2021 and quarter(HD.ngay_lam_hop_dong) = 1 )
+group by DV.ma_dich_vu;
