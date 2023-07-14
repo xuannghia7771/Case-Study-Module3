@@ -104,3 +104,5 @@ where DV.ma_dich_vu not in (
 	from hop_dong HD
 	where year(HD.ngay_lam_hop_dong) = 2021 and quarter(HD.ngay_lam_hop_dong) = 1 )
 group by DV.ma_dich_vu;
+
+-- bài 7
