@@ -123,3 +123,48 @@ and DV.ma_dich_vu not in (
 -- bài 8
 -- Hiển thị thông tin ho_ten khách hàng có trong hệ thống, với yêu cầu ho_ten không trùng nhau.
 -- Học viên sử dụng theo 3 cách khác nhau để thực hiện yêu cầu trên.
+select distinct ho_ten
+from khach_hang;
+
+select ho_ten from khach_hang
+union
+select ho_ten from khach_hang;
+
+select ho_ten
+from khach_hang
+group by ho_ten;
+
+-- bài 11
+-- Hiển thị thông tin các dịch vụ đi kèm đã được sử dụng bởi những khách hàng có ten_loai_khach là “Diamond”
+-- và có dia_chi ở “Vinh” hoặc “Quảng Ngãi”.
+select DVDK.ma_dich_vu_di_kem, DVDK.ten_dich_vu_di_kem
+from dich_vu_di_kem DVDK
+join hop_dong_chi_tiet HDCT on DVDK.ma_dich_vu_di_kem = HDCT.ma_dich_vu_di_kem
+join hop_dong HD on HD.ma_hop_dong = HDCT.ma_hop_dong
+join khach_hang KH on KH.ma_khach_hang = HD.ma_khach_hang
+join loai_khach LK on LK.ma_loai_khach = KH.ma_loai_khach
+where LK.ten_loai_khach = 'Diamond'
+and (KH.dia_chi like '%Vinh%' or KH.dia_chi like '%Quảng Ngãi%');
+
+-- bài 12
+-- Hiển thị thông tin ma_hop_dong, ho_ten (nhân viên), ho_ten (khách hàng), so_dien_thoai (khách hàng),
+-- ten_dich_vu, so_luong_dich_vu_di_kem (được tính dựa trên việc sum so_luong ở dich_vu_di_kem), 
+-- tien_dat_coc của tất cả các dịch vụ đã từng được khách hàng đặt vào 3 tháng cuối năm 2020
+-- nhưng chưa từng được khách hàng đặt vào 6 tháng đầu năm 2021.
+-- set sql_mode = 1;
+select HD.ma_hop_dong, NV.ho_ten, KH.ho_ten, KH.so_dien_thoai, DV.ten_dich_vu,
+ifnull((HDCT.so_luong),0) as so_luong_dich_du_di_kem,
+HD.tien_dat_coc
+from hop_dong HD
+left join nhan_vien NV on HD.ma_nhan_vien = NV.ma_nhan_vien
+left join khach_hang KH on KH.ma_khach_hang = HD.ma_khach_hang
+left join dich_vu DV on DV.ma_dich_vu = HD.ma_dich_vu
+left join hop_dong_chi_tiet HDCT on HDCT.ma_hop_dong = HD.ma_hop_dong
+left join dich_vu_di_kem DVDK on DVDK.ma_dich_vu_di_kem = HDCT.ma_dich_vu_di_kem
+where quarter(HD.ngay_lam_hop_dong) = 4 and year(HD.ngay_lam_hop_dong) = 2020
+and HD.ma_hop_dong not in (
+	select HD.ma_hop_dong
+    from hop_dong HD
+    where (quarter(HD.ngay_lam_hop_dong) in (1,2)) and year(HD.ngay_lam_hop_dong) = 2021
+)
+group by HD.ma_hop_dong
