@@ -97,12 +97,29 @@ left join dich_vu_di_kem DVDK on DVDK.ma_dich_vu_di_kem = HDCT.ma_dich_vu_di_kem
 -- bài 6
 select  DV.ma_dich_vu, DV.ten_dich_vu, DV.dien_tich, DV.chi_phi_thue, LDV.ten_loai_dich_vu
 from dich_vu DV
-left join loai_dich_vu LDV on DV.ma_loai_dich_vu = LDV.ma_loai_dich_vu
-left join hop_dong HD on DV.ma_dich_vu = HD.ma_dich_vu
+join loai_dich_vu LDV on DV.ma_loai_dich_vu = LDV.ma_loai_dich_vu
+join hop_dong HD on DV.ma_dich_vu = HD.ma_dich_vu
 where DV.ma_dich_vu not in (
 	select HD.ma_dich_vu
 	from hop_dong HD
 	where year(HD.ngay_lam_hop_dong) = 2021 and quarter(HD.ngay_lam_hop_dong) = 1 )
-group by DV.ma_dich_vu;
+group by DV.ma_dich_vu
+order by DV.dien_tich desc;
 
 -- bài 7
+-- Hiển thị thông tin ma_dich_vu, ten_dich_vu, dien_tich, so_nguoi_toi_da, chi_phi_thue, ten_loai_dich_vu
+-- của tất cả các loại dịch vụ đã từng được khách hàng đặt phòng trong năm 2020 
+-- nhưng chưa từng được khách hàng đặt phòng trong năm 2021.
+select distinct DV.ma_dich_vu, DV.ten_dich_vu, DV.dien_tich, DV.so_nguoi_toi_da, DV.chi_phi_thue, LDV.ten_loai_dich_vu
+from dich_vu DV
+join loai_dich_vu LDV on DV.ma_loai_dich_vu = LDV.ma_loai_dich_vu
+join hop_dong HD on HD.ma_dich_vu = DV.ma_dich_vu
+where year(HD.ngay_lam_hop_dong) = 2020
+and DV.ma_dich_vu not in (
+	select HD.ma_dich_vu
+    from hop_dong HD
+    where year(HD.ngay_lam_hop_dong) = 2021);
+
+-- bài 8
+-- Hiển thị thông tin ho_ten khách hàng có trong hệ thống, với yêu cầu ho_ten không trùng nhau.
+-- Học viên sử dụng theo 3 cách khác nhau để thực hiện yêu cầu trên.
