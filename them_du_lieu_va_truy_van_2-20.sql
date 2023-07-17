@@ -227,4 +227,17 @@ join bo_phan BP on BP.ma_bo_phan = NV.ma_bo_phan
 join hop_dong HD on HD.ma_nhan_vien = NV.ma_nhan_vien
 group by NV.ma_nhan_vien
 having count(HD.ma_nhan_vien) <= 3
-order by NV.ma_nhan_vien
+order by NV.ma_nhan_vien;
+
+-- bài 16
+alter table nhan_vien
+add column trang_thai_xoa bit(1) default 0 after ma_nhan_vien;
+
+-- bài 20
+-- Hiển thị thông tin của tất cả các nhân viên và khách hàng có trong hệ thống, thông tin hiển thị bao gồm id
+-- (ma_nhan_vien, ma_khach_hang), ho_ten, email, so_dien_thoai, ngay_sinh, dia_chi.
+select ma_nhan_vien as id, ho_ten, email, so_dien_thoai, ngay_sinh, dia_chi
+from nhan_vien
+union all
+select ma_khach_hang as id, ho_ten, email, so_dien_thoai, ngay_sinh, dia_chi
+from khach_hang;
