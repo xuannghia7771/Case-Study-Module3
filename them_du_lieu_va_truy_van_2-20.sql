@@ -1,5 +1,5 @@
 use furama_management;
-
+drop database furama_management;
 -- thêm dữ liệu vào các bảng
 insert into vi_tri(ten_vi_tri) value("Quản Lý"), ("Nhân Viên");
 insert into trinh_do(ten_trinh_do) value("Trung Cấp"), ("Cao Đẳng"), ("Đại Học"), ("Sau Đại Học");
@@ -241,6 +241,10 @@ set sql_safe_updates = 1;
 select ma_nhan_vien, ho_ten
 from nhan_vien
 where trang_thai_xoa = 1;
+
+-- bài 18
+-- Xóa những khách hàng có hợp đồng trước năm 2021 (chú ý ràng buộc giữa các bảng).
+
 
 -- bài 20
 -- Hiển thị thông tin của tất cả các nhân viên và khách hàng có trong hệ thống, thông tin hiển thị bao gồm id
