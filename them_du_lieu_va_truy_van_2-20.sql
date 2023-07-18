@@ -232,6 +232,15 @@ order by NV.ma_nhan_vien;
 -- bài 16
 alter table nhan_vien
 add column trang_thai_xoa bit(1) default 0 after ma_nhan_vien;
+set sql_safe_updates = 0;
+update nhan_vien
+set trang_thai_xoa = 1 -- Những nhân viên bị xóa sẽ có trang_thai_xoa là 1
+where ma_nhan_vien not in (select ma_nhan_vien from hop_dong);
+set sql_safe_updates = 1;
+-- hiển thị những nhân viên đã bị xóa
+select ma_nhan_vien, ho_ten
+from nhan_vien
+where trang_thai_xoa = 1;
 
 -- bài 20
 -- Hiển thị thông tin của tất cả các nhân viên và khách hàng có trong hệ thống, thông tin hiển thị bao gồm id
